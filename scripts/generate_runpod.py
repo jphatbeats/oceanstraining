@@ -115,8 +115,7 @@ def load_causal_model(local_path: str):
         device_map="auto",
         trust_remote_code=True,
         quantization_config=quant_cfg,
-        # Don't specify torch_dtype with quantization_config - causes internal .to() calls
-        use_safetensors=True,          # forces safetensors; avoids torch.load vuln
+        # Let transformers auto-detect safetensors - explicit flag can conflict with quantization
     )
 
     # Skip resize for quantized models - causes .to() errors
