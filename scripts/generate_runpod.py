@@ -76,8 +76,8 @@ class DonorSampleGenerator:
                 model_path,
                 device_map="auto",
                 torch_dtype=torch.float16,
-                quantization_config=quantization_config,
-                use_safetensors=True  # Force safetensors to avoid torch.load security issue
+                quantization_config=quantization_config
+                # use_safetensors auto-detects - models are already in safetensors format
             )
             print(f"   ✅ LLaMA model loaded in 8-bit (~25GB VRAM)")
 
