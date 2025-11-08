@@ -1,1 +1,32 @@
-readme 
+# 🌊 Oceans AI — Phase 15 Donor Data Pipeline
+
+This repository powers the **donor-data generation process** for the Oceans AI system — specifically for the entities **ARIA**, **DIONYSUS**, **SAGE**, and **HYDRA**.
+
+Each script is modular, allowing individual debugging or full automation via `run_phase15_complete.py`.
+
+---
+
+## 🧠 Purpose
+
+To create clean, synthetic datasets from various financial, social, and meme-based donor models for fine-tuning specialized LoRA adapters.
+
+---
+
+## 📜 File Overview
+
+| File | Description |
+|------|--------------|
+| `entity_prompts.py` | Prompt templates for each AI entity |
+| `generate_donor_samples.py` | Generates synthetic donor data |
+| `deduplicate_and_compress.py` | Removes duplicates and compresses outputs |
+| `prepare_cloud_upload.py` | Packages datasets for GPU/cloud upload |
+| `run_phase15_complete.py` | Runs all scripts in order |
+| `EXECUTION_GUIDE.md` | Step-by-step usage guide |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+cd /workspace/OCEANS/AI/oceans-training/donordata/scripts
+python run_phase15_complete.py
