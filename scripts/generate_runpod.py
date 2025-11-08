@@ -71,11 +71,13 @@ SAMPLE_TARGETS_PRESETS = {
 # Generation hyperparameters (safe defaults for 8-bit on A6000)
 GEN_KW = dict(
     max_new_tokens=256,
+    max_length=512,           # Hard limit to prevent infinite loops
     do_sample=True,
     temperature=0.8,
     top_p=0.95,
     top_k=50,
     repetition_penalty=1.05,
+    eos_token_id=None,        # Will be set per-model
 )
 
 # ---------- UTIL ----------
@@ -170,11 +172,15 @@ def generate_samples(entity: str, donor_key: str, n_samples: int):
             if not is_quantized:
                 input_ids = input_ids.to(model.device)
 
+            # Set proper EOS token to prevent infinite generation
+            gen_kwargs = GEN_KW.copy()
+            gen_kwargs['eos_token_id'] = tok.eos_token_id
+
             with torch.no_grad():
                 outputs = model.generate(
                     input_ids,
                     pad_token_id=pad_id,
-                    **GEN_KW,
+                    **gen_kwargs,
                 )
             text = tok.decode(outputs[0], skip_special_tokens=True)
 
