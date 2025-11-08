@@ -70,8 +70,7 @@ SAMPLE_TARGETS_PRESETS = {
 
 # Generation hyperparameters (safe defaults for 8-bit on A6000)
 GEN_KW = dict(
-    max_new_tokens=256,
-    max_length=512,           # Hard limit to prevent infinite loops
+    max_new_tokens=256,       # Max tokens to generate (prevents infinite loops)
     do_sample=True,
     temperature=0.8,
     top_p=0.95,
