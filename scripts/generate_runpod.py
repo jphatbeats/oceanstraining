@@ -99,9 +99,8 @@ def resolve_pad_ids(tok):
             tok.pad_token = tok.eos_token
             pad_id = tok.eos_token_id
         else:
-            # as last resort, add a special [PAD]
-            tok.add_special_tokens({"pad_token": "[PAD]"})
-            pad_id = tok.pad_token_id
+            # For quantized models, just use eos_token_id as fallback instead of adding tokens
+            pad_id = tok.eos_token_id if tok.eos_token_id else 0
     return pad_id
 
 def load_causal_model(local_path: str):
@@ -125,9 +124,8 @@ def load_causal_model(local_path: str):
         use_safetensors=True,          # forces safetensors; avoids torch.load vuln
     )
 
-    # Important for added [PAD] resize, if any:
-    if model.get_input_embeddings().weight.size(0) != len(tok):
-        model.resize_token_embeddings(len(tok))
+    # Skip resize for quantized models - causes .to() errors
+    # Tokenizers should already match model vocab size
 
     return tok, model, pad_id
 
