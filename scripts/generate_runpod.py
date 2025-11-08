@@ -147,6 +147,9 @@ def generate_samples(entity: str, donor_key: str, n_samples: int):
     out_path = OUT_DIR / f"{entity.lower()}_{donor_key}.jsonl"
     written = 0
 
+    # Check if model is quantized (8-bit models don't need input device movement)
+    is_quantized = getattr(model, "is_quantized", False) or hasattr(model, "hf_quantizer")
+
     with out_path.open("a", encoding="utf-8") as f:
         for i in range(n_samples):
             prompt = random.choice(prompts)
@@ -163,7 +166,10 @@ def generate_samples(entity: str, donor_key: str, n_samples: int):
             else:
                 input_ids = tok(prompt, return_tensors="pt").input_ids
 
-            # Quantized models handle device placement - inputs stay on CPU
+            # For fp16 models, move inputs to same device as model
+            if not is_quantized:
+                input_ids = input_ids.to(model.device)
+
             with torch.no_grad():
                 outputs = model.generate(
                     input_ids,
