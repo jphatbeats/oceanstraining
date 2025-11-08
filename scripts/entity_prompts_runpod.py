@@ -52,24 +52,24 @@ HYDRA_PROMPTS = [
     "Influencer analysis: Crypto Twitter account (500k followers) just flipped bearish. Potential impact?",
 ]
 
-# SMALLER sample targets for testing (1000 each instead of 7000)
+# FULL PRODUCTION - 48K total samples
 SAMPLE_TARGETS = {
     "ARIA": {
-        "finma": 1000,
-        "finance_llm": 1000
+        "finma": 5000,
+        "finance_llm": 6000
     },
     "DIONYSUS": {
-        "cryptobert": 1000,
-        "finbert": 1000,
-        "nemotron": 1000
+        "cryptobert": 5000,
+        "finbert": 4000,
+        "nemotron": 6000
     },
     "SAGE": {
-        "finma": 1000,
-        "finbert": 1000
+        "finma": 5000,
+        "finbert": 6000
     },
     "HYDRA": {
-        "cryptobert": 1000,
-        "finbert": 1000
+        "cryptobert": 6000,
+        "finbert": 5000
     }
 }
 
