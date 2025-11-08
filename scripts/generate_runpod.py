@@ -64,12 +64,20 @@ class DonorSampleGenerator:
 
         elif self.model_type == "llama":
             # LLaMA models - Use 8-bit for 51GB models on 48GB GPU
+            from transformers import BitsAndBytesConfig
+
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_threshold=6.0
+            )
+
             self.tokenizer = AutoTokenizer.from_pretrained(model_path)
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_path,
                 device_map="auto",
                 torch_dtype=torch.float16,
-                load_in_8bit=True  # 8-bit for 51GB models to fit in 48GB VRAM
+                quantization_config=quantization_config,
+                use_safetensors=True  # Force safetensors to avoid torch.load security issue
             )
             print(f"   ✅ LLaMA model loaded in 8-bit (~25GB VRAM)")
 
