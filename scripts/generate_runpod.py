@@ -151,10 +151,11 @@ def generate_samples(entity: str, donor_key: str, n_samples: int):
                     {"role": "system", "content": f"You are {entity}, an expert agent in a crypto-AI trading collective."},
                     {"role": "user", "content": prompt},
                 ]
-                input_ids = tok.apply_chat_template(messages, return_tensors="pt").to(model.device)
+                input_ids = tok.apply_chat_template(messages, return_tensors="pt")
             else:
-                input_ids = tok(prompt, return_tensors="pt").input_ids.to(model.device)
+                input_ids = tok(prompt, return_tensors="pt").input_ids
 
+            # Quantized models handle device placement - inputs stay on CPU
             with torch.no_grad():
                 outputs = model.generate(
                     input_ids,
