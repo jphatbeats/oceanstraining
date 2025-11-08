@@ -91,16 +91,11 @@ def set_seeds(seed: int = 42):
         torch.cuda.manual_seed_all(seed)
 
 def resolve_pad_ids(tok):
-    # Try to ensure a PAD token exists; many LLaMA/Qwen-ish tokenizers need this.
+    # Get pad token ID without modifying tokenizer (avoids .to() calls)
     pad_id = tok.pad_token_id
     if pad_id is None:
-        # prefer eos as pad to keep shapes valid
-        if tok.eos_token_id is not None:
-            tok.pad_token = tok.eos_token
-            pad_id = tok.eos_token_id
-        else:
-            # For quantized models, just use eos_token_id as fallback instead of adding tokens
-            pad_id = tok.eos_token_id if tok.eos_token_id else 0
+        # Use eos_token_id as fallback (don't assign to tok.pad_token)
+        pad_id = tok.eos_token_id if tok.eos_token_id is not None else 0
     return pad_id
 
 def load_causal_model(local_path: str):
