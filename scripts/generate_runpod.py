@@ -149,7 +149,9 @@ def generate_samples(entity: str, donor_key: str, n_samples: int):
                     {"role": "system", "content": f"You are {entity}, an expert agent in a crypto-AI trading collective."},
                     {"role": "user", "content": prompt},
                 ]
-                input_ids = tok.apply_chat_template(messages, return_tensors="pt")
+                # Don't use return_tensors - tokenize the formatted text instead
+                formatted = tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+                input_ids = tok(formatted, return_tensors="pt").input_ids
             else:
                 input_ids = tok(prompt, return_tensors="pt").input_ids
 
