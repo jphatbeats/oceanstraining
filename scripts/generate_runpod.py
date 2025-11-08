@@ -61,7 +61,7 @@ SAMPLE_TARGETS_PRESETS = {
     # Matches your "Option 2 – 50K exact" pattern but with only causal donors
     # (we split SAGE/HYDRA across finma/nemotron to keep it simple & fast).
     "50k": {
-        "ARIA":      {"finma": 6000, "finance_llm": 6000},
+        "ARIA":      {"finance_llm": 6000},  # finma already complete (6000 samples)
         "DIONYSUS":  {"nemotron": 15000},
         "SAGE":      {"finma": 6000, "nemotron": 6000},
         "HYDRA":     {"nemotron": 11000},
