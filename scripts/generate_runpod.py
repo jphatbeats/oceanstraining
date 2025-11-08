@@ -102,7 +102,6 @@ def load_causal_model(local_path: str):
     if not Path(local_path).exists():
         raise FileNotFoundError(f"Model folder not found: {local_path}")
 
-    quant_cfg = BitsAndBytesConfig(load_in_8bit=True)  # 8-bit for 48GB VRAM
     tok = AutoTokenizer.from_pretrained(
         local_path,
         use_fast=True,
@@ -110,13 +109,28 @@ def load_causal_model(local_path: str):
     )
     pad_id = resolve_pad_ids(tok)
 
-    model = AutoModelForCausalLM.from_pretrained(
-        local_path,
-        device_map="auto",
-        trust_remote_code=True,
-        quantization_config=quant_cfg,
-        # Let transformers auto-detect safetensors - explicit flag can conflict with quantization
-    )
+    # Try 8-bit first, fall back to fp16 if model config conflicts with quantization
+    try:
+        print("   Attempting 8-bit quantization...")
+        model = AutoModelForCausalLM.from_pretrained(
+            local_path,
+            load_in_8bit=True,
+            device_map="auto",
+            trust_remote_code=True,
+        )
+        print("   ✅ 8-bit quantization successful")
+    except Exception as e:
+        if ".to` is not supported" in str(e):
+            print(f"   ⚠️ 8-bit failed (model config conflict), falling back to fp16...")
+            model = AutoModelForCausalLM.from_pretrained(
+                local_path,
+                torch_dtype=torch.float16,
+                device_map="auto",
+                trust_remote_code=True,
+            )
+            print("   ✅ fp16 fallback successful")
+        else:
+            raise
 
     # Skip resize for quantized models - causes .to() errors
     # Tokenizers should already match model vocab size
