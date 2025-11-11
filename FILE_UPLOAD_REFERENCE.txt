@@ -1,0 +1,257 @@
+================================================================================
+RUNPOD FILE UPLOAD REFERENCE - ALL 5 PODS
+================================================================================
+Quick reference for which files to upload to each pod.
+All paths are from: N:\OCEANS\oceans_training\
+
+================================================================================
+UNIVERSAL FILE (Upload to ALL 5 pods)
+================================================================================
+
+File: setup_runpod_environment.sh
+From: N:\OCEANS\oceans_training\setup_runpod_environment.sh
+To:   /workspace/setup_runpod_environment.sh
+Size: ~3 KB
+
+Run on each pod: chmod +x /workspace/setup_runpod_environment.sh
+                 ./setup_runpod_environment.sh
+
+================================================================================
+POD 1: ARIA-TRAINING
+================================================================================
+
+Training Script:
+  From: N:\OCEANS\oceans_training\train_aria_runpod.py
+  To:   /workspace/train_aria_runpod.py
+  Size: ~7 KB
+
+Dataset:
+  From: N:\OCEANS\oceans_training\data\final_training\ARIA_final_training.jsonl
+  To:   /workspace/datasets\ARIA_final_training.jsonl
+  Size: 109 MB
+  Samples: 197,479
+
+Training Command:
+  nohup python train_aria_runpod.py > training.log 2>&1 &
+
+Expected Output:
+  /workspace/output/aria_adapter/ (~55 MB)
+
+================================================================================
+POD 2: DIONYSUS-RESEARCH
+================================================================================
+
+Training Script:
+  From: N:\OCEANS\oceans_training\train_dionysus_runpod.py
+  To:   /workspace/train_dionysus_runpod.py
+  Size: ~7 KB
+
+Dataset:
+  From: N:\OCEANS\oceans_training\data\final_training\DIONYSUS_final_training.jsonl
+  To:   /workspace/datasets\DIONYSUS_final_training.jsonl
+  Size: 113 MB
+  Samples: 201,215
+
+Training Command:
+  nohup python train_dionysus_runpod.py > training.log 2>&1 &
+
+Expected Output:
+  /workspace/output/dionysus_adapter/ (~55 MB)
+
+================================================================================
+POD 3: DIONYSUS-TRADING ⭐ START THIS ONE FIRST (Fastest - 3 hours)
+================================================================================
+
+Training Script:
+  From: N:\OCEANS\oceans_training\train_dionysus_trading_runpod.py
+  To:   /workspace/train_dionysus_trading_runpod.py
+  Size: ~7 KB
+
+Dataset: ⚠️ USE THE ENHANCED VERSION!
+  From: N:\OCEANS\oceans_training\data\final_training\DIONYSUS_trading_brain_ENHANCED.jsonl
+  To:   /workspace/datasets\DIONYSUS_trading_brain_ENHANCED.jsonl
+  Size: 20 MB
+  Samples: 28,464
+
+  ❌ DO NOT USE: DIONYSUS_trading_brain.jsonl (old version, 17 MB, 25,144 samples)
+
+Training Command:
+  nohup python train_dionysus_trading_runpod.py > training.log 2>&1 &
+
+Expected Output:
+  /workspace/output/dionysus_trading_adapter/ (~25 MB)
+
+Training Time: ~3 hours (FASTEST!)
+
+================================================================================
+POD 4: SAGE-TRAINING
+================================================================================
+
+Training Script:
+  From: N:\OCEANS\oceans_training\train_sage_runpod.py
+  To:   /workspace/train_sage_runpod.py
+  Size: ~7 KB
+
+Dataset:
+  From: N:\OCEANS\oceans_training\data\final_training\SAGE_final_training.jsonl
+  To:   /workspace/datasets\SAGE_final_training.jsonl
+  Size: 107 MB
+  Samples: 194,479
+
+Training Command:
+  nohup python train_sage_runpod.py > training.log 2>&1 &
+
+Expected Output:
+  /workspace/output/sage_adapter/ (~55 MB)
+
+================================================================================
+POD 5: HYDRA-TRAINING
+================================================================================
+
+Training Script:
+  From: N:\OCEANS\oceans_training\train_hydra_runpod.py
+  To:   /workspace/train_hydra_runpod.py
+  Size: ~7 KB
+
+Dataset:
+  From: N:\OCEANS\oceans_training\data\final_training\HYDRA_final_training.jsonl
+  To:   /workspace/datasets\HYDRA_final_training.jsonl
+  Size: 110 MB
+  Samples: 201,215
+
+Training Command:
+  nohup python train_hydra_runpod.py > training.log 2>&1 &
+
+Expected Output:
+  /workspace/output/hydra_adapter/ (~55 MB)
+
+================================================================================
+VERIFICATION COMMANDS (Run on each pod after upload)
+================================================================================
+
+# Verify setup script
+ls -lh /workspace/setup_runpod_environment.sh
+
+# Verify training script
+ls -lh /workspace/train_*.py
+
+# Verify dataset
+ls -lh /workspace/datasets/*.jsonl
+
+# Count dataset samples (CRITICAL - must match expected!)
+wc -l /workspace/datasets/*.jsonl
+
+Expected line counts:
+  197479 - ARIA_final_training.jsonl
+  201215 - DIONYSUS_final_training.jsonl
+   28464 - DIONYSUS_trading_brain_ENHANCED.jsonl ⭐
+  194479 - SAGE_final_training.jsonl
+  201215 - HYDRA_final_training.jsonl
+
+# Check disk space (need >150GB free)
+df -h
+
+================================================================================
+RECOMMENDED TRAINING ORDER
+================================================================================
+
+STEP 1: DIONYSUS-TRADING FIRST (Test run)
+  Why: Fastest (3 hours), smallest dataset, tests entire workflow
+  Start: Pod 3
+  Wait: Monitor until complete (~3 hours)
+  Verify: Download adapter, check it's ~25 MB
+  Learn: Now you know the process works!
+
+STEP 2: ALL 4 REMAINING PODS IN PARALLEL
+  Why: All take ~7 hours, running parallel saves 21 hours!
+  Start: Pods 1, 2, 4, 5 all at once
+  Wait: Monitor all 4 (~7 hours)
+  Download: All 4 adapters (~55 MB each)
+  Stop: All 4 pods immediately!
+
+Total wall-clock time: 3 hours + 7 hours = 10 hours
+Total cost: (3h × $0.49) + (7h × $0.49 × 4 pods) = $1.47 + $13.72 = $15.19
+
+If you run sequentially:
+  5 pods × 7 hours average = 35 hours wall-clock
+  Cost would be same ($15-18) but takes 3x longer!
+
+================================================================================
+CRITICAL WARNINGS
+================================================================================
+
+⚠️ WRONG DATASET:
+  DIONYSUS-TRADING must use ENHANCED version!
+  If you upload DIONYSUS_trading_brain.jsonl (old):
+    - Training will work but knowledge will be INCOMPLETE
+    - Missing Pump.fun mechanics, PumpPortal API, exact code examples
+    - Trading brain will be DUMBER not SMARTER!
+
+⚠️ FORGOT TO STOP POD:
+  If you forget to stop pod after downloading:
+    - Charges continue: $0.49/hour
+    - 24 hours = $11.76 wasted
+    - 1 week = $82.32 wasted
+  ALWAYS stop pod immediately after download!
+
+⚠️ DATASET LINE COUNT MISMATCH:
+  If wc -l shows wrong number:
+    - File upload may have been corrupted
+    - Re-upload dataset
+    - Verify count again before training
+
+⚠️ LOW DISK SPACE:
+  If df -h shows <100GB free:
+    - Training may fail mid-way
+    - Create pod with larger container disk (150GB+)
+
+================================================================================
+DOWNLOAD DESTINATIONS (Save adapters to local machine)
+================================================================================
+
+After training completes, download adapters to these local paths:
+
+Pod 1 (ARIA):
+  From: /workspace/output/aria_adapter/
+  To:   N:\OCEANS\oceans_training\output\aria_adapter\
+
+Pod 2 (DIONYSUS-Research):
+  From: /workspace/output/dionysus_adapter/
+  To:   N:\OCEANS\oceans_training\output\dionysus_adapter\
+
+Pod 3 (DIONYSUS-Trading):
+  From: /workspace/output/dionysus_trading_adapter/
+  To:   N:\OCEANS\oceans_training\output\dionysus_trading_adapter\
+
+Pod 4 (SAGE):
+  From: /workspace/output/sage_adapter/
+  To:   N:\OCEANS\oceans_training\output\sage_adapter\
+
+Pod 5 (HYDRA):
+  From: /workspace/output/hydra_adapter/
+  To:   N:\OCEANS\oceans_training\output\hydra_adapter\
+
+Each adapter contains:
+  - adapter_model.safetensors (the trained weights)
+  - adapter_config.json (LoRA configuration)
+  - tokenizer_config.json
+  - tokenizer.json
+  - special_tokens_map.json
+  - tokenizer_model (for some models)
+
+================================================================================
+QUICK COPY-PASTE COMMANDS FOR EACH POD
+================================================================================
+
+# After uploading files, run these on the pod:
+
+cd /workspace
+chmod +x setup_runpod_environment.sh
+./setup_runpod_environment.sh
+wc -l /workspace/datasets/*.jsonl
+nohup python train_*.py > training.log 2>&1 &
+tail -f /workspace/training.log
+
+# (Replace train_*.py with your specific script)
+
+================================================================================

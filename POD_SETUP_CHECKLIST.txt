@@ -1,0 +1,204 @@
+================================================================================
+RUNPOD TRAINING POD SETUP CHECKLIST
+================================================================================
+Use this checklist for EACH pod. Print this out or keep it open!
+
+Pod Name: ________________  Started: ______  Stopped: ______  Cost: $______
+
+================================================================================
+PHASE 1: ENVIRONMENT SETUP (~10 minutes)
+================================================================================
+
+[ ] 1. Create new RunPod pod (A6000 48GB, 100GB container, 50GB volume)
+[ ] 2. Start pod and get SSH/Web access
+[ ] 3. Upload setup_runpod_environment.sh to /workspace/
+[ ] 4. Run: chmod +x /workspace/setup_runpod_environment.sh
+[ ] 5. Run: ./setup_runpod_environment.sh
+[ ] 6. Wait for "ENVIRONMENT SETUP COMPLETE!" message
+[ ] 7. Verify GPU: nvidia-smi shows A6000
+[ ] 8. Verify PyTorch: python3 -c "import torch; print(torch.__version__)"
+         Expected: 2.5.1+cu121
+
+================================================================================
+PHASE 2: UPLOAD TRAINING FILES (~5 minutes)
+================================================================================
+
+Pod-specific files to upload:
+
+ARIA:
+[ ] Upload: train_aria_runpod.py → /workspace/
+[ ] Upload: ARIA_final_training.jsonl → /workspace/datasets/
+[ ] Verify: wc -l /workspace/datasets/ARIA_final_training.jsonl
+    Expected: 197479
+
+DIONYSUS-RESEARCH:
+[ ] Upload: train_dionysus_runpod.py → /workspace/
+[ ] Upload: DIONYSUS_final_training.jsonl → /workspace/datasets/
+[ ] Verify: wc -l /workspace/datasets/DIONYSUS_final_training.jsonl
+    Expected: 201215
+
+DIONYSUS-TRADING: ⭐ FASTEST (3 hours)
+[ ] Upload: train_dionysus_trading_runpod.py → /workspace/
+[ ] Upload: DIONYSUS_trading_brain_ENHANCED.jsonl → /workspace/datasets/
+[ ] Verify: wc -l /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+    Expected: 28464
+
+SAGE:
+[ ] Upload: train_sage_runpod.py → /workspace/
+[ ] Upload: SAGE_final_training.jsonl → /workspace/datasets/
+[ ] Verify: wc -l /workspace/datasets/SAGE_final_training.jsonl
+    Expected: 194479
+
+HYDRA:
+[ ] Upload: train_hydra_runpod.py → /workspace/
+[ ] Upload: HYDRA_final_training.jsonl → /workspace/datasets/
+[ ] Verify: wc -l /workspace/datasets/HYDRA_final_training.jsonl
+    Expected: 201215
+
+================================================================================
+PHASE 3: START TRAINING (~1 minute)
+================================================================================
+
+[ ] 1. cd /workspace
+[ ] 2. Run: nohup python train_*.py > training.log 2>&1 &
+         (Replace train_*.py with your specific script)
+[ ] 3. Note process ID: _______
+[ ] 4. Run: tail -f /workspace/training.log
+[ ] 5. Verify training started (see "[1/6] Loading dataset..." message)
+[ ] 6. Press Ctrl+C to exit tail (training keeps running!)
+[ ] 7. Record start time: ______
+
+Expected completion time:
+- DIONYSUS-TRADING: ~3 hours from now
+- All others: ~7 hours from now
+
+================================================================================
+PHASE 4: MONITOR TRAINING (Check every 1-2 hours)
+================================================================================
+
+[ ] Check 1 (after 1 hour):   tail -n 30 /workspace/training.log
+    Loss should be decreasing (started ~2-3, now ~1-2)
+
+[ ] Check 2 (after 3 hours):  tail -n 30 /workspace/training.log
+    DIONYSUS-TRADING should be DONE!
+    Others: Loss ~0.5-0.8
+
+[ ] Check 3 (after 5 hours):  tail -n 30 /workspace/training.log
+    Others: Loss ~0.3-0.5
+
+[ ] Check 4 (after 7 hours):  tail -n 30 /workspace/training.log
+    Should see "SUCCESS!" and "DONE!" messages
+
+GPU check anytime: nvidia-smi (should show 90-100% utilization)
+
+================================================================================
+PHASE 5: DOWNLOAD ADAPTER (~5 minutes)
+================================================================================
+
+[ ] 1. Verify training complete:
+        tail -n 20 /workspace/training.log | grep "DONE"
+
+[ ] 2. Check adapter created:
+        ls -lh /workspace/output/*/adapter_model.safetensors
+
+[ ] 3. Check adapter size:
+        du -sh /workspace/output/*/
+        Expected: ~25 MB (DIONYSUS-Trading) or ~55 MB (others)
+
+[ ] 4. Download all files from /workspace/output/[entity]_adapter/
+        - adapter_model.safetensors
+        - adapter_config.json
+        - tokenizer files
+
+[ ] 5. Save to local: N:\OCEANS\oceans_training\output\[entity]_adapter\
+
+[ ] 6. Verify download:
+        - All files present locally
+        - Can open adapter_config.json (valid JSON)
+        - adapter_model.safetensors size matches RunPod
+
+================================================================================
+PHASE 6: STOP POD ⚠️ CRITICAL - DO NOT SKIP!
+================================================================================
+
+[ ] 1. Go to RunPod dashboard
+[ ] 2. Find this pod in the list
+[ ] 3. Click "Stop" or "Terminate" button
+[ ] 4. Confirm stop action
+[ ] 5. Wait for status to change to "Stopped"
+[ ] 6. DOUBLE-CHECK status is "Stopped" (refresh page!)
+[ ] 7. Record stop time: ______
+[ ] 8. Calculate cost: ______ hours × $0.49/hour = $______
+
+IF YOU FORGET THIS STEP:
+- Pod keeps running and charging $0.49/hour
+- 24 hours = $11.76 wasted
+- 7 days = $82.32 wasted
+- ALWAYS STOP AFTER DOWNLOADING!
+
+================================================================================
+FINAL VERIFICATION
+================================================================================
+
+[ ] Adapter files downloaded to local machine
+[ ] Adapter size correct (~25-55 MB)
+[ ] Pod STOPPED in RunPod dashboard (status = "Stopped")
+[ ] Cost recorded and reasonable (~$1.50-$3.50 per pod)
+[ ] Ready to deploy adapter to local Ocean system
+
+================================================================================
+COST TRACKING
+================================================================================
+
+Expected costs (with buffer):
+- DIONYSUS-TRADING: 4 hours × $0.49 = $1.96
+- ARIA: 8 hours × $0.49 = $3.92
+- DIONYSUS-Research: 8 hours × $0.49 = $3.92
+- SAGE: 8 hours × $0.49 = $3.92
+- HYDRA: 8 hours × $0.49 = $3.92
+
+Total expected: ~$15-18 for all 5 adapters
+
+If costs are higher, you may have:
+- Left pod running too long
+- Forgotten to stop pod
+- Need to verify pod is actually stopped!
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Training won't start:
+[ ] Check: python3 -c "import torch; print(torch.__version__)"
+[ ] Check: nvidia-smi shows GPU
+[ ] Re-run setup script
+
+CUDA out of memory:
+[ ] Run: pkill -f jupyter
+[ ] Run: pkill -f python
+[ ] Restart training
+
+Training stuck/frozen:
+[ ] Check: ps aux | grep train_
+[ ] Check: nvidia-smi (GPU should be 90-100%)
+[ ] Check: tail -n 20 /workspace/training.log
+[ ] If stuck >30 min with no progress: kill and restart
+
+High loss (not decreasing):
+[ ] Check dataset uploaded correctly
+[ ] Check dataset line count matches expected
+[ ] Check dataset is ENHANCED version (for DIONYSUS-Trading)
+
+================================================================================
+NOTES
+================================================================================
+
+_________________________________________________________________________
+
+_________________________________________________________________________
+
+_________________________________________________________________________
+
+_________________________________________________________________________
+
+================================================================================

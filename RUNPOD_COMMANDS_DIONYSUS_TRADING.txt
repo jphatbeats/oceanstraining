@@ -1,0 +1,92 @@
+=============================================================================
+DIONYSUS-TRADING POD SETUP COMMANDS
+=============================================================================
+
+Step 1: Create directories on RunPod
+-------------------------------------
+mkdir -p /workspace/datasets
+mkdir -p /workspace/output
+
+Step 2: Upload files (use RunPod web interface or SCP)
+------------------------------------------------------
+Upload these 2 files from your local machine:
+
+FROM: N:/OCEANS/oceans_training/train_dionysus_trading_runpod.py
+TO:   /workspace/train_dionysus_trading_runpod.py
+
+FROM: N:/OCEANS/oceans_training/data/final_training/DIONYSUS_trading_brain_ENHANCED.jsonl
+TO:   /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+
+Step 3: Verify uploads
+----------------------
+ls -lh /workspace/train_dionysus_trading_runpod.py
+ls -lh /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+wc -l /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+
+Expected output:
+  -rw-r--r-- 1 root root 7.0K Nov 11 XX:XX /workspace/train_dionysus_trading_runpod.py
+  -rw-r--r-- 1 root root  20M Nov 11 XX:XX /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+  28464 /workspace/datasets/DIONYSUS_trading_brain_ENHANCED.jsonl
+
+Step 4: Start training
+----------------------
+cd /workspace
+nohup python train_dionysus_trading_runpod.py > training.log 2>&1 &
+
+Step 5: Monitor progress
+------------------------
+# Watch live training log (Ctrl+C to exit)
+tail -f /workspace/training.log
+
+# Or check last 50 lines
+tail -n 50 /workspace/training.log
+
+# Check GPU usage
+nvidia-smi
+
+Step 6: Check when complete (after ~2-3 hours)
+-----------------------------------------------
+# Training is done when you see "DONE! Trade execution intelligence UPGRADED!"
+tail -n 20 /workspace/training.log
+
+# Verify adapter created
+ls -lh /workspace/output/dionysus_trading_adapter/
+du -sh /workspace/output/dionysus_trading_adapter/
+
+Expected: ~25 MB adapter
+
+Step 7: Download adapter
+------------------------
+Use RunPod web interface to download:
+  /workspace/output/dionysus_trading_adapter/
+
+Save to local:
+  N:/OCEANS/oceans_training/output/dionysus_trading_adapter/
+
+Step 8: STOP POD (CRITICAL!)
+-----------------------------
+Go to RunPod dashboard → Stop pod
+DO NOT FORGET THIS STEP OR YOU'LL BE CHARGED!
+
+=============================================================================
+QUICK REFERENCE
+=============================================================================
+
+# Verify environment (should all be installed already)
+python --version              # 3.11.10
+python -c "import torch; print(torch.__version__)"  # 2.5.1+cu121
+python -c "import transformers; print(transformers.__version__)"  # 4.40.0
+
+# Check training progress
+tail -f /workspace/training.log
+nvidia-smi
+
+# Check if training finished
+tail -n 20 /workspace/training.log | grep "DONE"
+
+# Estimated timeline
+# - Model download: 5-10 min
+# - Training: 2-3 hours
+# - Total: ~3 hours
+
+=============================================================================
