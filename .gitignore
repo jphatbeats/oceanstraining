@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+*.out
+
+# Training outputs (too large for Git)
+output/
+checkpoints/
+*.bin
+*.safetensors
+adapter_*/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# HuggingFace cache (models downloaded at runtime)
+.cache/
+
+# Keep track of .jsonl with Git LFS (configured separately)
+# All .jsonl files will be handled by Git LFS

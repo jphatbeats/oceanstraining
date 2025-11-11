@@ -1,0 +1,2 @@
+*.jsonl filter=lfs diff=lfs merge=lfs -text
+data/final_training/*.jsonl filter=lfs diff=lfs merge=lfs -text
