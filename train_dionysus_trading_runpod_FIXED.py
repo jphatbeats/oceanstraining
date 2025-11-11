@@ -95,9 +95,8 @@ def main():
     logger.info("\n[3/6] Tokenizing dataset...")
     def tokenize_function(example):
         # Process one example at a time to avoid batching issues
-        text = example["text"]
         result = tokenizer(
-            text,
+            text=example["text"],
             truncation=True,
             max_length=2048,
             padding="max_length"
