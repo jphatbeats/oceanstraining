@@ -95,11 +95,13 @@ def main():
     logger.info("\n[3/6] Tokenizing dataset...")
     def tokenize_function(example):
         # Process one example at a time to avoid batching issues
+        text_input = example["text"]
         result = tokenizer(
-            text=example["text"],
+            text_input,
             truncation=True,
             max_length=2048,
-            padding="max_length"
+            padding="max_length",
+            return_tensors=None
         )
         result["labels"] = result["input_ids"].copy()
         return result
