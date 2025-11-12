@@ -95,8 +95,10 @@ def main():
     # Tokenize dataset - FIXED VERSION (batched mode like working scripts)
     logger.info("\n[3/6] Tokenizing dataset...")
     def tokenize_function(examples):
+        # Explicitly convert to list for batched processing
+        texts = examples["text"] if isinstance(examples["text"], list) else [examples["text"]]
         return tokenizer(
-            examples["text"],
+            texts,
             truncation=True,
             max_length=2048,
             padding="max_length"
