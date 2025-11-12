@@ -40,11 +40,11 @@ echo ""
 
 pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 
-pip install \
-    transformers==4.40.0 \
-    peft==0.17.1 \
-    bitsandbytes==0.48.2 \
-    accelerate==1.11.0 \
+pip install -U \
+    transformers==4.45.2 \
+    peft==0.13.2 \
+    bitsandbytes==0.43.2 \
+    accelerate==0.34.2 \
     datasets==4.4.1 \
     safetensors==0.6.2 \
     tqdm==4.67.1 \
@@ -84,10 +84,10 @@ echo "======================================================================"
 echo ""
 echo "Installed packages:"
 echo "  ✓ PyTorch 2.5.1+cu121 (CUDA 12.1)"
-echo "  ✓ Transformers 4.40.0"
-echo "  ✓ PEFT 0.17.1 (LoRA training)"
-echo "  ✓ BitsAndBytes 0.48.2 (4-bit quantization)"
-echo "  ✓ Accelerate 1.11.0 (distributed training)"
+echo "  ✓ Transformers 4.45.2"
+echo "  ✓ PEFT 0.13.2 (LoRA training)"
+echo "  ✓ BitsAndBytes 0.43.2 (4-bit quantization)"
+echo "  ✓ Accelerate 0.34.2 (distributed training)"
 echo "  ✓ Datasets 4.4.1 (data loading)"
 echo ""
 echo "Workspace directories:"
