@@ -16,6 +16,7 @@ from transformers import (
     BitsAndBytesConfig
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from transformers import DataCollatorForLanguageModeling
 import logging
 
 # Setup logging
@@ -91,23 +92,19 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
-    # Tokenize dataset - FIXED VERSION
+    # Tokenize dataset - FIXED VERSION (batched mode like working scripts)
     logger.info("\n[3/6] Tokenizing dataset...")
-    def tokenize_function(example):
-        # Process one example at a time to avoid batching issues
-        text_input = example["text"]
-        result = tokenizer(
-            text_input,
+    def tokenize_function(examples):
+        return tokenizer(
+            examples["text"],
             truncation=True,
             max_length=2048,
-            padding="max_length",
-            return_tensors=None
+            padding="max_length"
         )
-        result["labels"] = result["input_ids"].copy()
-        return result
 
     tokenized_dataset = dataset.map(
         tokenize_function,
+        batched=True,
         remove_columns=dataset.column_names,
         desc="Tokenizing"
     )
@@ -147,12 +144,18 @@ def main():
         **TRAINING_CONFIG
     )
 
+    # Data collator (like working scripts use)
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer,
+        mlm=False
+    )
+
     # Create trainer
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_dataset,
-        tokenizer=tokenizer
+        data_collator=data_collator
     )
 
     # Start training
