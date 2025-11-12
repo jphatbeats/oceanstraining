@@ -92,11 +92,19 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
-    # Tokenize dataset - FIXED VERSION (batched mode like working scripts)
+    # Tokenize dataset - FIXED VERSION (robust clean)
     logger.info("\n[3/6] Tokenizing dataset...")
     def tokenize_function(examples):
-        # Explicitly convert to list for batched processing
-        texts = examples["text"] if isinstance(examples["text"], list) else [examples["text"]]
+        # Ensure every text entry is a string
+        texts = []
+        for t in examples["text"]:
+            if isinstance(t, dict):
+                # Handle structured fields like {"role": "user", "content": "..."}
+                t = t.get("content", "")
+            elif t is None:
+                t = ""
+            texts.append(str(t))
+
         return tokenizer(
             texts,
             truncation=True,
