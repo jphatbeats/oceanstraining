@@ -41,7 +41,7 @@ echo ""
 pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 
 pip install -U \
-    transformers==4.45.2 \
+    transformers==4.57.1 \
     peft==0.13.2 \
     bitsandbytes==0.43.2 \
     accelerate==0.34.2 \
@@ -84,7 +84,7 @@ echo "======================================================================"
 echo ""
 echo "Installed packages:"
 echo "  ✓ PyTorch 2.5.1+cu121 (CUDA 12.1)"
-echo "  ✓ Transformers 4.45.2"
+echo "  ✓ Transformers 4.57.1 (Qwen3 MoE support)"
 echo "  ✓ PEFT 0.13.2 (LoRA training)"
 echo "  ✓ BitsAndBytes 0.43.2 (4-bit quantization)"
 echo "  ✓ Accelerate 0.34.2 (distributed training)"
